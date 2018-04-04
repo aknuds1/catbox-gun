@@ -10,3 +10,4 @@ Current version: [![Current Version](https://img.shields.io/npm/v/catbox-gun.svg
 ### Options
 
 - `file` - Set the path to the GUN database file.
+- `peers` - An array of URLs of GUN instances to sync with

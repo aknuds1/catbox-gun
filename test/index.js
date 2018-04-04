@@ -5,9 +5,18 @@ const Code = require('code');
 const Hoek = require('hoek');
 const Lab = require('lab');
 const Tmp = require('tmp');
-const CatboxGun = require('..');
+const Proxyquire = require('proxyquire');
+const Sinon = require('Sinon');
+const Gun = require('gun');
 
-const { describe, it, afterEach } = exports.lab = Lab.script();
+let gunFactory = Gun;
+const proxyGun = (...args) => {
+
+    return gunFactory(...args);
+};
+const CatboxGun = Proxyquire('..', { gun: proxyGun });
+
+const { describe, it, beforeEach, afterEach } = exports.lab = Lab.script();
 const expect = Code.expect;
 
 let databaseDir;
@@ -22,7 +31,7 @@ const createClient = () => {
     }));
 };
 
-describe('Gun', () => {
+describe('CatboxGun', () => {
 
     afterEach(() => {
 
@@ -30,6 +39,29 @@ describe('Gun', () => {
             databaseDir.removeCallback();
         };
         databaseDir = null;
+    });
+
+    describe('constructor', () => {
+
+        beforeEach(() => {
+
+            gunFactory = Sinon.spy();
+        });
+
+        afterEach(() => {
+
+            gunFactory = Gun;
+        });
+
+        it('supports configuring Gun peers', () => {
+
+            const adapter = new CatboxGun({ peers: ['peer1', 'peer2'] });
+            adapter.start();
+            expect(gunFactory.args[0][0].peers).to.equal({
+                'peer1': null,
+                'peer2': null
+            });
+        });
     });
 
     it('throws an error if not created with new', () => {
