@@ -5,18 +5,11 @@ const Code = require('code');
 const Hoek = require('hoek');
 const Lab = require('lab');
 const Tmp = require('tmp');
-const Proxyquire = require('proxyquire');
-const Sinon = require('Sinon');
-const Gun = require('gun');
 
-let gunFactory = Gun;
-const proxyGun = (...args) => {
+const Settings = require('../settings.json');
+const CatboxGun = require('..');
 
-    return gunFactory(...args);
-};
-const CatboxGun = Proxyquire('..', { gun: proxyGun });
-
-const { describe, it, beforeEach, afterEach } = exports.lab = Lab.script();
+const { describe, it, afterEach } = exports.lab = Lab.script();
 const expect = Code.expect;
 
 let databaseDir;
@@ -27,7 +20,9 @@ const createClient = () => {
         unsafeCleanup: true
     });
     return new Catbox.Client(new CatboxGun({
-        file: databaseDir.name
+        grpcTlsCa: Buffer.from(Settings.GRPC_TLS_CA, 'base64').toString(),
+        grpcTlsClientKey: Buffer.from(Settings.GRPC_TLS_CLIENT_KEY, 'base64').toString(),
+        grpcTlsClientCert: Buffer.from(Settings.GRPC_TLS_CLIENT_CERT, 'base64').toString()
     }));
 };
 
@@ -39,29 +34,6 @@ describe('CatboxGun', () => {
             databaseDir.removeCallback();
         };
         databaseDir = null;
-    });
-
-    describe('constructor', () => {
-
-        beforeEach(() => {
-
-            gunFactory = Sinon.spy();
-        });
-
-        afterEach(() => {
-
-            gunFactory = Gun;
-        });
-
-        it('supports configuring Gun peers', () => {
-
-            const adapter = new CatboxGun({ peers: ['peer1', 'peer2'] });
-            adapter.start();
-            expect(gunFactory.args[0][0].peers).to.equal({
-                'peer1': null,
-                'peer2': null
-            });
-        });
     });
 
     it('throws an error if not created with new', () => {
@@ -94,20 +66,7 @@ describe('CatboxGun', () => {
         await client.set(key, '123', 500);
 
         const result = await client.get(key);
-        console.log(`Got result`, result);
         expect(result.item).to.equal('123');
-    });
-
-    it('supports setting an item with circular references', async () => {
-
-        const client = createClient();
-        await client.start();
-
-        const key = { id: 'x', segment: 'test' };
-        const value = { a: 1 };
-
-        value.b = value;
-        await client.set(key, value, 10);
     });
 
     it('ignored starting a connection twice chained', async () => {
@@ -222,11 +181,8 @@ describe('CatboxGun', () => {
             await client.start();
             const key = { id: 'x', segment: 'test' };
             await client.set(key, '123', 500);
-            console.log(`Set`);
             const result = await client.get(key);
-            console.log(`Get`);
             expect(result.item).to.equal('123');
-            console.log(`Drop`);
             await client.drop(key);
         });
 
