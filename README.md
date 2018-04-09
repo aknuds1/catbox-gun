@@ -12,3 +12,4 @@ Current version: [![Current Version](https://img.shields.io/npm/v/catbox-gun.svg
 - `grpcTlsCa` - Set the gRPC certificate authority
 - `grpcTlsClientKey` - Set the gRPC client key
 - `grpcTlsClientCert` - Set the gRPC client certificate
+- `serviceUri` - Set gRPC service URI

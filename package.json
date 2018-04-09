@@ -1,7 +1,7 @@
 {
   "name": "catbox-gun",
   "description": "GUN adapter for Catbox",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "repository": "git://github.com/aknuds1/catbox-gun",
   "main": "lib/index.js",
   "keywords": [
