@@ -58,6 +58,16 @@ describe('CatboxGun', () => {
         expect(client.isReady()).to.be.false();
     });
 
+    it('returns null when getting a non-existent item', async () => {
+
+        const client = createClient();
+        await client.start();
+        const key = { id: 'x', segment: 'test' };
+
+        const result = await client.get(key);
+        expect(result).to.equal(null);
+    });
+
     it('gets an item after setting it', async () => {
 
         const client = createClient();
