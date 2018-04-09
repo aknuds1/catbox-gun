@@ -9,5 +9,6 @@ Current version: [![Current Version](https://img.shields.io/npm/v/catbox-gun.svg
 
 ### Options
 
-- `file` - Set the path to the GUN database file.
-- `peers` - An array of URLs of GUN instances to sync with
+- `grpcTlsCa` - Set the gRPC certificate authority
+- `grpcTlsClientKey` - Set the gRPC client key
+- `grpcTlsClientCert` - Set the gRPC client certificate
