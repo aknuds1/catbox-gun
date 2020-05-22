@@ -18,7 +18,7 @@
     "error": "^7.0.2",
     "grpc": "^1.10.1",
     "hoek": "5.x.x",
-    "ramda": "^0.25.0"
+    "ramda": "^0.27.0"
   },
   "devDependencies": {
     "catbox": "10.x.x",
